@@ -9,7 +9,7 @@ const createListings = () => {
   const API_KEY = "45ac13a7c2764f6880bc0a63095448e3";
   const BASE_URL = "https://api.geoapify.com/v2/places";
   const DEFAULT_LOCATION = "circle:-79.698788,43.469814,5000"; // 5km radius
-  const DEFAULT_CATEGORIES = "catering.cafe";
+  const DEFAULT_CATEGORIES = ["catering.cafe", "catering.restaurant", "catering.fast_food"]; // cafes and bubble tea places
   const ALLERGENS = [
     { label: "Vegetarian", value: "vegetarian" },
     { label: "Vegetarian Only", value: "vegetarian.only" },
@@ -49,9 +49,19 @@ const createListings = () => {
     }
     const url = `${BASE_URL}?${params.toString()}`;
     console.log("Geoapify API URL:", url);
-    const res = await fetch(url);
-    const data = await res.json();
-    return data.features || [];
+    try {
+      const res = await fetch(url);
+      const data = await res.json();
+      console.log("Geoapify API data:", data);
+      return data.features || [];
+    } catch (err) {
+      console.error("Geoapify fetch error:", err);
+      const listDiv = document.getElementById("places-list");
+      if (listDiv) {
+        listDiv.innerHTML = "<p style='color:red'>Failed to fetch cafes. Please try again later.</p>";
+      }
+      return [];
+    }
   }
 
   // Render places as a list
