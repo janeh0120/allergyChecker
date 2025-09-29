@@ -1,25 +1,25 @@
 import { createNavigation } from './navigation.js';
 import { createListings } from './listings.js';
 
-// fetch a simple list of all pokemon types (fighting, flying, etc.)
+// fetch a simple list of all cafes
 // This only includes the name and url for each.
-const response = await fetch('https://pokeapi.co/api/v2/type/?limit=100')
+const response = await fetch('https://api.geoapify.com/v2/places')
 const json = await response.json()
 
-console.log('List of Pokemon Types', json.results)
+console.log('List of Cafes', json.results)
 
-// Let's get more details for each of the types of pokemon
+// Let's get more details for each of the cafes
 // this will include a list of member pokemon for each type  
 // note the use of Promise.all to fetch all at once
-const pokemonTypes = await Promise.all(
-  json.results.map(async (pokemonType) => {
-    const data = await fetch(pokemonType.url)
+const cafeDetails = await Promise.all(
+  json.results.map(async (cafe) => {
+    const data = await fetch(cafe.url)
     return data.json()
   })
 )
-console.log('Pokemon Types with Details', pokemonTypes)
+console.log('Cafes with Details', cafeDetails)
 
-// Now we can build the navigation menu and listings for each type
-createNavigation(pokemonTypes)
-createListings(pokemonTypes)
+// Now we can build the navigation menu and listings for each cafe
+createNavigation(cafeDetails)
+createListings(cafeDetails)
 
