@@ -4,6 +4,90 @@ import { createProfile } from './profile.js';
 // We receive as input all types of Pokemon including a list of its members 
 // To understand the structure of the data, check the console log in the browser.
 const createListings = (pokemonTypes) => {
+  // Geoapify API integration for listing cafes and bubble tea places with allergen filters
+
+  const API_KEY = "45ac13a7c2764f6880bc0a63095448e3";
+  const BASE_URL = "https://api.geoapify.com/v2/places";
+  const DEFAULT_LOCATION = "circle:-79.698788,43.469814,5000"; // 5km radius
+  const DEFAULT_CATEGORIES = "catering.cafe,catering.bubble_tea";
+  const ALLERGENS = [
+    { label: "Vegetarian", value: "vegetarian" },
+    { label: "Vegetarian Only", value: "vegetarian.only" },
+    { label: "Vegan", value: "vegan" },
+    { label: "Vegan Only", value: "vegan.only" },
+    { label: "Halal", value: "halal" },
+    { label: "Halal Only", value: "halal.only" },
+    { label: "Kosher", value: "kosher" },
+    { label: "Kosher Only", value: "kosher.only" },
+    { label: "Organic", value: "organic" },
+    { label: "Organic Only", value: "organic.only" },
+    { label: "Gluten Free", value: "gluten_free" },
+    { label: "Sugar Free", value: "sugar_free" },
+    { label: "Egg Free", value: "egg_free" },
+    { label: "Soy Free", value: "soy_free" },
+  ];
+
+  // Render allergen filter checkboxes
+  function renderAllergenFilters() {
+    const filterDiv = document.getElementById("allergen-filters");
+    if (!filterDiv) return;
+    filterDiv.innerHTML = ALLERGENS.map(a => `
+      <label><input type="checkbox" value="${a.value}" class="allergen-checkbox"> ${a.label}</label>
+    `).join(" ");
+  }
+
+  // Fetch places from Geoapify
+  async function fetchPlaces(selectedAllergens = []) {
+    const params = new URLSearchParams({
+      apiKey: API_KEY,
+      filter: DEFAULT_LOCATION,
+      categories: DEFAULT_CATEGORIES,
+      limit: 30,
+    });
+    if (selectedAllergens.length > 0) {
+      params.append("conditions", selectedAllergens.join(","));
+    }
+    const url = `${BASE_URL}?${params.toString()}`;
+    const res = await fetch(url);
+    const data = await res.json();
+    return data.features || [];
+  }
+
+  // Render places as a list
+  function renderPlaces(places) {
+    const listDiv = document.getElementById("places-list");
+    if (!listDiv) return;
+    if (places.length === 0) {
+      listDiv.innerHTML = "<p>No results found.</p>";
+      return;
+    }
+    listDiv.innerHTML = places.map(f => {
+      const p = f.properties;
+      return `
+        <div class="place-item">
+          <h3>${p.name || "Unnamed"}</h3>
+          <p>${p.formatted || "No address"}</p>
+          ${p.website ? `<a href="${p.website}" target="_blank">Website</a>` : ""}
+          <div class="categories">${(p.categories || []).join(", ")}</div>
+        </div>
+      `;
+    }).join("");
+  }
+
+  // Handle filter changes
+  async function handleFilterChange() {
+    const checked = Array.from(document.querySelectorAll('.allergen-checkbox:checked')).map(cb => cb.value);
+    const places = await fetchPlaces(checked);
+    renderPlaces(places);
+  }
+
+  // Initialize on page load
+  window.addEventListener("DOMContentLoaded", async () => {
+    renderAllergenFilters();
+    document.getElementById("allergen-filters").addEventListener("change", handleFilterChange);
+    const places = await fetchPlaces();
+    renderPlaces(places);
+  });
 
   // iterate over the list of pokemon types
   // filter out the ones that have no pokemon (e.g. "unknown", "shadow")
