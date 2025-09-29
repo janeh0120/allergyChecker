@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta
+    name="viewport"
+    content="width=device-width"
+  >
+  <title>Pokemon Types</title>
+
+  <!-- Pokemon Font via https://www.cdnfonts.com/pokemon-solid.font -->
+  <link
+    href="https://fonts.cdnfonts.com/css/pokemon-solid"
+    rel="stylesheet"
+  >
+
+  <!-- Dom Purify library helps to Sanitize dynamic HTML strings.-->
+  <script
+    src="https://cdn.jsdelivr.net/npm/dompurify@3.2.7/dist/purify.min.js"
+    integrity="sha256-QM/0krVDU6Vc35/7NpeGU5/7fVTSX5fdSh6JdbMJw10="
+    crossorigin="anonymous"
+  ></script>
+
+  <!-- Twentieth Century font via Monotype.com --->
+  <link
+    href="https://cdn.fonts.net/kit/7b6b1e00-8b68-11ec-9ce3-0220834439f4/7b6b1e00-8b68-11ec-9ce3-0220834439f4.css"
+    rel="stylesheet"
+  />
+
+  <link
+    href="style.css"
+    rel="stylesheet"
+    type="text/css"
+  />
+  <!-- Use a Pokemon Coloured Base64 Pixel as Favicon. see also: https://png-pixel.com/ -->
+  <link
+    href="data:image/x-icon;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mN8HxzwHwAGXgKT5yJ2+AAAAABJRU5ErkJggg=="
+    rel="icon"
+    type="image/x-icon"
+  >
+</head>
+
+<body>
+  <header>
+    <img src="pokeball.svg">
+    <h1>Pokemon Types</h1>
+  </header>
+  <nav></nav>
+  <main></main>
+  <footer>
+
+    <p>This demo illustrates how we can make multiple fetches on one page. We first fetch a list of pokemon types,
+      followed by details for each. We then populate listings, such that each pokemon is connected to an individual
+      fetch for details, which in turn are shown in a popover. Data fetched from the <a
+        href="https://pokeapi.co"></a>PokeAPI</p>
+
+  </footer>
+  <script
+    src="main.js"
+    type="module"
+  ></script>
+</body>
+
+</html>

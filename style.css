@@ -1,0 +1,320 @@
+html {
+  height: 100%;
+  width: 100%;
+  text-align: center;
+}
+
+body {
+  font-family: 'TwentiethCenturyMedium', sans-serif;
+  margin: 0;
+}
+
+h1 {
+  font-family: 'Pokemon Solid', sans-serif;
+  font-size: 3rem;
+  letter-spacing: 0.25rem;
+  margin: 0;
+  line-height: 3rem;
+  text-align: left;
+}
+
+h2 {
+
+  font-size: 2rem;
+  padding: 0px;
+  margin: 0px 0px 1rem;
+  font-family: 'Pokemon Solid', sans-serif;
+  line-height: 3rem;
+  letter-spacing: 0.25rem;
+}
+
+h3 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-weight: normal;
+  margin-top: 0px;
+}
+
+h3 span {
+  color: #fff;
+  padding: 0.2rem 0.5rem;
+  border-radius: 0.5rem;
+  text-shadow: 0 1px #222;
+}
+
+nav {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+}
+
+button {
+  padding: 10px 18px;
+  border-radius: 0.5rem;
+  color: #222;
+  font-size: 16px;
+  text-shadow: 0 1px #fff;
+  cursor: pointer;
+  border: 2px solid #fff;
+}
+
+
+nav button {
+  color: #fff;
+  font-size: 16px;
+  text-shadow: 0 1px #222;
+}
+
+button:hover {
+  border: 2px solid #222;
+}
+
+
+section {
+  display: none;
+  padding: 1rem;
+}
+
+section.active {
+  height: auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+}
+
+
+/* ---- .listing ---- */
+
+.listing {
+  padding: 1rem;
+}
+
+.listing>button {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: start;
+  width: 100%;
+  gap: 1rem;
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.listing>button .open {
+  opacity: 0;
+  width: 1.5rem;
+}
+
+.listing>button:hover .open {
+  opacity: 0.25;
+}
+
+.listing img {
+  width: 75px;
+
+}
+
+.listing .profile img {
+  align-self: center;
+  width: 300px;
+  max-width: 30vw;
+}
+
+[popover] {
+  padding: 2rem 2rem 3rem;
+  border-radius: 1rem;
+  border: none;
+  filter: drop-shadow(0 0 2rem rgba(0, 0, 0, 0.3));
+}
+
+[popover]::backdrop {
+  backdrop-filter: blur(3px);
+}
+
+
+[popover] .profile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 75vw;
+}
+
+fieldset {
+  border: none;
+}
+
+footer {
+  padding: 2rem;
+}
+
+header img {
+  width: 80px;
+  padding: 1.2rem 0.8rem 0;
+}
+
+
+header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 2rem;
+}
+
+button.close {
+  align-self: end;
+  position: relative;
+  z-index: 10;
+  /* ensure that the button is on top of the subsequent text */
+  cursor: pointer;
+}
+
+.details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+}
+
+
+
+
+.stats {
+  margin-top: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+
+@media (min-width: 768px) {
+  .details {
+    flex-direction: row;
+    gap: 2rem;
+  }
+
+  .stats {
+    gap: 2rem;
+    margin-top: 2rem;
+  }
+}
+
+.stat {
+  width: 4rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.base-stat {
+  width: 3rem;
+  height: 3rem;
+  background: rgba(0, 0, 0, 0.3);
+  color: #fff;
+  font-weight: bold;
+  font-size: 1.5rem;
+  border-radius: 3rem;
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  flex-direction: column;
+
+}
+
+.stat-name {
+  font-weight: bold;
+  color: rgba(0, 0, 0, 0.5);
+}
+
+
+/*Colours Via https://bulbapedia.bulbagarden.net/wiki/Type */
+.normal {
+  background: #A8A878
+}
+
+.fire {
+  background: #F08030
+}
+
+.fighting {
+  background: #C03028
+}
+
+.water {
+  background: #6890F0
+}
+
+.flying,
+.flying .listing {
+  background: #a890f0
+}
+
+.grass,
+.grass .listing {
+  background: #78c850
+}
+
+.poison,
+.poison .listing {
+  background: #a040a0
+}
+
+.electric,
+.electric .listing {
+  background: #f8d030
+}
+
+.ground,
+.ground .listing {
+  background: #e0c068
+}
+
+.psychic,
+.psychic .listing {
+  background: #f85888
+}
+
+.rock,
+.rock .listing {
+  background: #b8a038
+}
+
+.ice,
+.ice .listing {
+  background: #98d8d8
+}
+
+.bug,
+.bug .listing {
+  background: #a8b820
+}
+
+.dragon,
+.dragon .listing {
+  background: #7038f8
+}
+
+.ghost,
+.ghost .listing {
+  background: #705898
+}
+
+.dark,
+.dark .listing {
+  background: #705848
+}
+
+.steel,
+.steel .listing {
+  background: #b8b8d0
+}
+
+.fairy,
+.fairy .listing {
+  background: #ee99ac
+}
