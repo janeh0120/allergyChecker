@@ -8,7 +8,7 @@ const createListings = () => {
 
   const API_KEY = "45ac13a7c2764f6880bc0a63095448e3";
   const BASE_URL = "https://api.geoapify.com/v2/places";
-  const DEFAULT_LOCATION = "circle:-79.698788,43.469814,20000"; // 20km radius
+  const DEFAULT_LOCATION = "circle:-79.698788,43.469814,10000"; // 10km radius
   const DEFAULT_CATEGORIES = ["catering.cafe", "catering.restaurant", "catering.fast_food"]; // cafes and bubble tea places
   const ALLERGENS = [
     { label: "Vegetarian", value: "vegetarian" },
@@ -58,7 +58,7 @@ const createListings = () => {
       apiKey: API_KEY,
       filter: DEFAULT_LOCATION,
       categories: DEFAULT_CATEGORIES,
-      limit: 30,
+      limit: 50,
     });
     if (selectedAllergens.length > 0) {
       params.append("conditions", selectedAllergens.join(","));
@@ -80,120 +80,221 @@ const createListings = () => {
     }
   }
 
+// // Render places as a list, filtered by selected types
+// function renderPlaces(places, selectedTypes = TYPE.map(t => t.value)) {
+//   const listDiv = document.getElementById("places-list");
+//   if (!listDiv) return;
+
+//   if (!Array.isArray(places) || places.length === 0) {
+//     listDiv.innerHTML = "<p>No results found.</p>";
+//     return;
+//   }
+
+//   const typeValues = TYPE.map(t => t.value);
+
+//   listDiv.innerHTML = places
+//     .filter(f => {
+//       const p = f.properties || {};
+//       const cats = p.categories || [];
+//       // consider a match if any category equals or startsWith a selected type (so "catering.cafe" matches "catering.cafe.coffee")
+//       return cats.some(cat => selectedTypes.some(sel => cat === sel || cat.startsWith(sel)));
+//     })
+//     .map(f => {
+//       const p = f.properties || {};
+
+//       // tags: only keep the top-level TYPE matches (allowing more-specific categories)
+//       const tags = (p.categories || []).filter(cat => typeValues.some(tv => cat === tv || cat.startsWith(tv)));
+
+//       // Allergen tags (safe guard for p.conditions)
+//       const allergenTags = ALLERGENS
+//         .filter(a => (p.conditions && typeof p.conditions.includes === "function" && p.conditions.includes(a.value)) || p[a.value] === true)
+//         .map(a => `<span class="allergen-tag">${a.label}</span>`);
+
+//       // --- Cuisine handling: robustly accept array, semicolon/csv string, or object ---
+//       let cuisinesRaw = undefined;
+//       if (p.datasource && p.datasource.raw && p.datasource.raw.cuisine) {
+//         cuisinesRaw = p.datasource.raw.cuisine;
+//       } else if (p.catering && p.catering.cuisine) {
+//         cuisinesRaw = p.catering.cuisine;
+//       } else if (p.cuisines) {
+//         cuisinesRaw = p.cuisines;
+//       } else if (p.cuisine) {
+//         cuisinesRaw = p.cuisine;
+//       } else {
+//         cuisinesRaw = "";
+//       }
+
+//       let cuisines = [];
+//       if (Array.isArray(cuisinesRaw)) {
+//         cuisines = cuisinesRaw.slice();
+//       } else if (typeof cuisinesRaw === "string") {
+//         // split on semicolon or comma (trim and remove empty)
+//         cuisines = cuisinesRaw.split(/[;,]/).map(s => s.trim()).filter(Boolean);
+//       } else if (cuisinesRaw && typeof cuisinesRaw === "object") {
+//         // flatten values if object-like
+//         try {
+//           cuisines = Object.values(cuisinesRaw).flat().map(String).map(s => s.trim()).filter(Boolean);
+//         } catch (e) {
+//           cuisines = [];
+//         }
+//       }
+
+//       // normalize cuisine tokens so keys match (e.g. "bubble tea" -> "bubble_tea")
+//       const normalizedCuisines = cuisines.map(c => String(c).toLowerCase().replace(/\s+/g, "_").replace(/-/g, "_"));
+//       const mostSpecificCuisine = normalizedCuisines.length ? normalizedCuisines[normalizedCuisines.length - 1] : "";
+
+//       // Map cuisines and categories to images
+//       const categoryImages = {
+//         "bubble_tea": "images/bubble-tea.svg",
+//         "coffee": "images/coffee.svg",
+//         "coffee_shop": "images/coffee.svg",
+//         "mediterranean": "images/mediterranean-sharwarma.svg",
+//         "sharwarma": "images/mediterranean-sharwarma.svg",
+//         // "ramen": "images/ramen.svg",
+//         "breakfast": "images/breakfast.svg",
+//         "fast_food": "images/fast-food.svg",
+//         "american": "images/fast-food.svg",
+//         "burger": "images/fast-food.svg",
+//         "indian": "images/indian.svg",
+//         "tex_mex": "images/taco-texmex.svg",
+//         "taco": "images/taco-texmex.svg",
+//         "empanada": "images/taco-texmex.svg",
+//         // "restaurant": "images/restaurant.svg",
+//         "bar_and_grill": "images/bar&grill.svg",
+//         "steak_house": "images/bar&grill.svg",
+//         "italian": "images/pizza-italian.svg",
+//         "pizza": "images/pizza-italian.svg",
+//         "thai": "images/thai.svg",
+//         "cake": "images/cake.svg",
+//         // add more mappings as needed
+//       };
+
+//       // Choose image: prefer cuisine → fallback to type → fallback to default
+//       let imgSrc = categoryImages[mostSpecificCuisine];
+//       if (!imgSrc && tags.length) {
+//         // find the TYPE entry that matches this tag (using startsWith to handle more specific categories)
+//         const typeMatch = TYPE.find(t => tags[0] === t.value || tags[0].startsWith(t.value));
+//         if (typeMatch) {
+//           const typeKey = typeMatch.label.toLowerCase().replace(/\s+/g, "_");
+//           imgSrc = categoryImages[typeKey] || categoryImages[typeMatch.label.toLowerCase()];
+//         }
+//       }
+//       if (!imgSrc) imgSrc = "pokeball.svg";
+
+//       // prepare a user-friendly cuisines string for display
+//       const displayCuisines = normalizedCuisines.length ? normalizedCuisines.join(", ") : (p.cuisines || "None");
+
+//       return `
+//         <div class="place-item">
+//           <img src="${imgSrc}" alt="${mostSpecificCuisine || 'Placeholder'}" style="width:64px;height:64px;object-fit:cover;border-radius:8px;margin-bottom:0.5rem;" />
+//           <h3>${p.name || "Unnamed"}</h3>
+//           <p class="cuisines">${displayCuisines}</p>
+//           <p>${p.address_line2 || "No address"}</p>
+//           ${p.website ? `<a href="${p.website}" target="_blank">Website<img src="open.svg" alt="Open website"></a>` : ""}
+//           <div class="categories"><strong>Type:</strong> 
+//             ${tags.length ? tags.map(tag => {
+//               const typeObj = TYPE.find(t => tag === t.value || tag.startsWith(t.value));
+//               return `<span class="tag">${typeObj ? typeObj.label : tag.replace("catering.", "")}</span>`;
+//             }).join(" ") : '<span class="tag">Unknown</span>'}
+//           </div>
+//           <div class="allergens"><strong>Allergens:</strong> 
+//             ${allergenTags.length ? allergenTags.join(" ") : '<span class="allergen-tag">None listed</span>'}
+//           </div>
+//         </div>
+//       `;
+//     }).join("");
+// }
+
 // Render places as a list, filtered by selected types
 function renderPlaces(places, selectedTypes = TYPE.map(t => t.value)) {
   const listDiv = document.getElementById("places-list");
   if (!listDiv) return;
 
-  if (!Array.isArray(places) || places.length === 0) {
+  if (places.length === 0) {
     listDiv.innerHTML = "<p>No results found.</p>";
     return;
   }
 
-  const typeValues = TYPE.map(t => t.value);
-
   listDiv.innerHTML = places
     .filter(f => {
-      const p = f.properties || {};
-      const cats = p.categories || [];
-      // consider a match if any category equals or startsWith a selected type (so "catering.cafe" matches "catering.cafe.coffee")
-      return cats.some(cat => selectedTypes.some(sel => cat === sel || cat.startsWith(sel)));
+      const p = f.properties;
+      return (p.categories || []).some(cat => selectedTypes.includes(cat));
     })
     .map(f => {
-      const p = f.properties || {};
+      const p = f.properties;
 
-      // tags: only keep the top-level TYPE matches (allowing more-specific categories)
-      const tags = (p.categories || []).filter(cat => typeValues.some(tv => cat === tv || cat.startsWith(tv)));
+      // Show only TYPE tags
+      const tags = (p.categories || []).filter(cat => TYPE.map(t => t.value).includes(cat));
 
-      // Allergen tags (safe guard for p.conditions)
+      // Allergen tags
       const allergenTags = ALLERGENS
-        .filter(a => (p.conditions && typeof p.conditions.includes === "function" && p.conditions.includes(a.value)) || p[a.value] === true)
+        .filter(a => (p.conditions && p.conditions.includes && p.conditions.includes(a.value)) || p[a.value] === true)
         .map(a => `<span class="allergen-tag">${a.label}</span>`);
 
-      // --- Cuisine handling: robustly accept array, semicolon/csv string, or object ---
-      let cuisinesRaw = undefined;
-      if (p.datasource && p.datasource.raw && p.datasource.raw.cuisine) {
-        cuisinesRaw = p.datasource.raw.cuisine;
-      } else if (p.catering && p.catering.cuisine) {
-        cuisinesRaw = p.catering.cuisine;
-      } else if (p.cuisines) {
-        cuisinesRaw = p.cuisines;
-      } else if (p.cuisine) {
-        cuisinesRaw = p.cuisine;
-      } else {
-        cuisinesRaw = "";
+      // Cuisine handling (Geoapify may return string or array)
+      let cuisines = p.datasource?.raw?.cuisine || [];
+      if (typeof cuisines === "string") {
+        cuisines = cuisines.split(";").map(c => c.trim());
       }
 
-      let cuisines = [];
-      if (Array.isArray(cuisinesRaw)) {
-        cuisines = cuisinesRaw.slice();
-      } else if (typeof cuisinesRaw === "string") {
-        // split on semicolon or comma (trim and remove empty)
-        cuisines = cuisinesRaw.split(/[;,]/).map(s => s.trim()).filter(Boolean);
-      } else if (cuisinesRaw && typeof cuisinesRaw === "object") {
-        // flatten values if object-like
-        try {
-          cuisines = Object.values(cuisinesRaw).flat().map(String).map(s => s.trim()).filter(Boolean);
-        } catch (e) {
-          cuisines = [];
-        }
-      }
-
-      // normalize cuisine tokens so keys match (e.g. "bubble tea" -> "bubble_tea")
-      const normalizedCuisines = cuisines.map(c => String(c).toLowerCase().replace(/\s+/g, "_").replace(/-/g, "_"));
-      const mostSpecificCuisine = normalizedCuisines.length ? normalizedCuisines[normalizedCuisines.length - 1] : "";
-
-      // Map cuisines and categories to images
+      //  Map cuisines and categories to images
       const categoryImages = {
         "bubble_tea": "images/bubble-tea.svg",
         "coffee": "images/coffee.svg",
         "coffee_shop": "images/coffee.svg",
         "mediterranean": "images/mediterranean-sharwarma.svg",
-        "sharwarma": "images/mediterranean-sharwarma.svg",
+        "lebanese": "images/mediterranean-sharwarma.svg",
         // "ramen": "images/ramen.svg",
         "breakfast": "images/breakfast.svg",
         "fast_food": "images/fast-food.svg",
         "american": "images/fast-food.svg",
         "burger": "images/fast-food.svg",
         "indian": "images/indian.svg",
-        "tex_mex": "images/taco-texmex.svg",
+        "tex-mex": "images/taco-texmex.svg",
         "taco": "images/taco-texmex.svg",
         "empanada": "images/taco-texmex.svg",
-        // "restaurant": "images/restaurant.svg",
+        "mexican": "images/taco-texmex.svg",
         "bar_and_grill": "images/bar&grill.svg",
         "steak_house": "images/bar&grill.svg",
         "italian": "images/pizza-italian.svg",
         "pizza": "images/pizza-italian.svg",
         "thai": "images/thai.svg",
         "cake": "images/cake.svg",
+        "chinese": "images/chinese.svg",
         // add more mappings as needed
       };
 
-      // Choose image: prefer cuisine → fallback to type → fallback to default
-      let imgSrc = categoryImages[mostSpecificCuisine];
-      if (!imgSrc && tags.length) {
-        // find the TYPE entry that matches this tag (using startsWith to handle more specific categories)
-        const typeMatch = TYPE.find(t => tags[0] === t.value || tags[0].startsWith(t.value));
-        if (typeMatch) {
-          const typeKey = typeMatch.label.toLowerCase().replace(/\s+/g, "_");
-          imgSrc = categoryImages[typeKey] || categoryImages[typeMatch.label.toLowerCase()];
+      // Pick the FIRST cuisine in order that exists in categoryImages
+      let chosenCuisine = "";
+      let imgSrc = "";
+      for (const c of cuisines) {
+        if (categoryImages[c]) {
+          chosenCuisine = c;
+          imgSrc = categoryImages[c];
+          break;
         }
       }
-      if (!imgSrc) imgSrc = "pokeball.svg";
 
-      // prepare a user-friendly cuisines string for display
-      const displayCuisines = normalizedCuisines.length ? normalizedCuisines.join(", ") : (p.cuisines || "None");
+      // If no cuisine image found, fallback to type
+      if (!imgSrc && tags.length) {
+        const typeObj = TYPE.find(t => t.value === tags[0]);
+        if (typeObj) {
+          imgSrc = categoryImages[typeObj.label.toLowerCase()] || "images/restaurant.svg";
+        }
+      }
+
+      // Final fallback
+      if (!imgSrc) imgSrc = "pokeball.svg";
 
       return `
         <div class="place-item">
-          <img src="${imgSrc}" alt="${mostSpecificCuisine || 'Placeholder'}" style="width:64px;height:64px;object-fit:cover;border-radius:8px;margin-bottom:0.5rem;" />
+          <img src="${imgSrc}" alt="${chosenCuisine || 'Placeholder'}" style="width:64px;height:64px;object-fit:cover;border-radius:8px;margin-bottom:0.5rem;" />
           <h3>${p.name || "Unnamed"}</h3>
-          <p class="cuisines">${displayCuisines}</p>
           <p>${p.address_line2 || "No address"}</p>
           ${p.website ? `<a href="${p.website}" target="_blank">Website<img src="open.svg" alt="Open website"></a>` : ""}
           <div class="categories"><strong>Type:</strong> 
             ${tags.length ? tags.map(tag => {
-              const typeObj = TYPE.find(t => tag === t.value || tag.startsWith(t.value));
+              const typeObj = TYPE.find(t => t.value === tag);
               return `<span class="tag">${typeObj ? typeObj.label : tag.replace("catering.", "")}</span>`;
             }).join(" ") : '<span class="tag">Unknown</span>'}
           </div>
@@ -204,7 +305,6 @@ function renderPlaces(places, selectedTypes = TYPE.map(t => t.value)) {
       `;
     }).join("");
 }
-
 
 
 
