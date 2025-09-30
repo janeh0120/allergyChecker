@@ -32,7 +32,7 @@ html, body {
 }
 
 body {
-  font-family: 'TwentiethCenturyMedium', sans-serif;
+  font-family: sans-serif;
   margin: 0;
   background-color: rgb(240, 238, 234);
   height: 100vh;
@@ -51,12 +51,12 @@ h1 {
 
 h2 {
 
-  font-size: 2rem;
+  font-size: 5rem;
   padding: 0px;
   margin: 0px 0px 1rem;
   font-family: 'Roca', sans-serif;
-  line-height: 3rem;
-  letter-spacing: -0.05rem;
+  line-height: 5rem;
+  letter-spacing: -0.2rem;
   font-weight: 900;
 }
 

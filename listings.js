@@ -119,9 +119,9 @@ const createListings = () => {
           "catering.cafe.cake": "cake.svg",
           "catering.cafe.dessert": "dessert.svg",
           "catering.cafe.ice_cream": "icecream.svg",
-          "catering.fast_food": "fastfood.svg",
-          "catering.restaurant": "restaurant.svg",
-          "catering.bar": "bar.svg",
+          "catering.fast_food": "images/fast-food.svg",
+          "catering.restaurant": "images/restaurant.svg",
+          "catering.bar": "images/bar.svg",
           // Add more mappings as needed
         };
         const imgSrc = categoryImages[mostSpecific] || "pokeball.svg";
