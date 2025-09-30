@@ -8,23 +8,37 @@ const createListings = () => {
 
   const API_KEY = "45ac13a7c2764f6880bc0a63095448e3";
   const BASE_URL = "https://api.geoapify.com/v2/places";
-  const DEFAULT_LOCATION = "circle:-79.698788,43.469814,5000"; // 5km radius
+  const DEFAULT_LOCATION = "circle:-79.698788,43.469814,20000"; // 20km radius
   const DEFAULT_CATEGORIES = ["catering.cafe", "catering.restaurant", "catering.fast_food"]; // cafes and bubble tea places
   const ALLERGENS = [
     { label: "Vegetarian", value: "vegetarian" },
-    { label: "Vegetarian Only", value: "vegetarian.only" },
+    // { label: "Vegetarian Only", value: "vegetarian.only" },
     { label: "Vegan", value: "vegan" },
-    { label: "Vegan Only", value: "vegan.only" },
+    // { label: "Vegan Only", value: "vegan.only" },
     { label: "Halal", value: "halal" },
-    { label: "Halal Only", value: "halal.only" },
+    // { label: "Halal Only", value: "halal.only" },
     { label: "Kosher", value: "kosher" },
-    { label: "Kosher Only", value: "kosher.only" },
+    // { label: "Kosher Only", value: "kosher.only" },
     { label: "Organic", value: "organic" },
-    { label: "Organic Only", value: "organic.only" },
+    // { label: "Organic Only", value: "organic.only" },
     { label: "Gluten Free", value: "gluten_free" },
     { label: "Sugar Free", value: "sugar_free" },
     { label: "Egg Free", value: "egg_free" },
     { label: "Soy Free", value: "soy_free" },
+  ];
+  const TYPE = [
+    // { label: "Cafe", value: ["catering.cafe.coffee", "catering.cafe.coffee_shop"] },
+    // { label: "Cake", value: "catering.cafe.cake" },
+    // { label: "Crepe", value: "catering.cafe.crepe" },
+    // { label: "Dessert", value: "catering.cafe.dessert" },
+    // { label: "Donut", value: "catering.cafe.donut" },
+    // { label: "Frozen Yogurt", value: "catering.cafe.frozen_yogurt" },
+    // { label: "Ice Cream", value: "catering.cafe.ice_cream" },
+    // { label: "Tea", value: "catering.cafe.tea" },
+    { label: "Restaurant", value: "catering.restaurant" },
+    { label: "Fast Food", value: "catering.fast_food" },
+    { label: "Cafe", value: "catering.cafe" },
+    { label: "Bar", value: "catering.bar" },
   ];
 
   // Render allergen filter checkboxes
@@ -33,6 +47,16 @@ const createListings = () => {
     if (!filterDiv) return;
     filterDiv.innerHTML = ALLERGENS.map(a => `
       <label><input type="checkbox" value="${a.value}" class="allergen-checkbox"> ${a.label}</label>
+    `).join(" ");
+  }
+
+
+  // Render type filter checkboxes (used for filtering and display)
+  function renderTypeFilters(selectedTypes = TYPE.map(t => t.value)) {
+    const typeFilterDiv = document.getElementById("type-filters");
+    if (!typeFilterDiv) return;
+    typeFilterDiv.innerHTML = TYPE.map(t => `
+      <label><input type="checkbox" value="${t.value}" class="type-checkbox" ${selectedTypes.includes(t.value) ? "checked" : ""}> ${t.label}</label>
     `).join(" ");
   }
 
@@ -64,39 +88,85 @@ const createListings = () => {
     }
   }
 
-  // Render places as a list
-  function renderPlaces(places) {
+  // Render places as a list, filtered by selected types
+  function renderPlaces(places, selectedTypes = TYPE.map(t => t.value)) {
     const listDiv = document.getElementById("places-list");
     if (!listDiv) return;
     if (places.length === 0) {
       listDiv.innerHTML = "<p>No results found.</p>";
       return;
     }
-    listDiv.innerHTML = places.map(f => {
-      const p = f.properties;
-      return `
-        <div class="place-item">
-          <h3>${p.name || "Unnamed"}</h3>
-          <p>${p.formatted || "No address"}</p>
-          ${p.website ? `<a href="${p.website}" target="_blank">Website</a>` : ""}
-          <div class="categories">${(p.categories || []).join(", ")}</div>
-        </div>
-      `;
-    }).join("");
+    listDiv.innerHTML = places
+      .filter(f => {
+        const p = f.properties;
+        return (p.categories || []).some(cat => selectedTypes.includes(cat));
+      })
+      .map(f => {
+        const p = f.properties;
+        // Show only TYPE tags
+        const tags = (p.categories || []).filter(cat => TYPE.map(t => t.value).includes(cat));
+        // Allergen tags: check for each allergen if present in p.conditions or p (Geoapify may return these as boolean or array)
+        const allergenTags = ALLERGENS
+          .filter(a => (p.conditions && p.conditions.includes && p.conditions.includes(a.value)) || p[a.value] === true)
+          .map(a => `<span class="allergen-tag">${a.label}</span>`);
+        return `
+          <div class="place-item">
+            <h3>${p.name || "Unnamed"}</h3>
+            <p>${p.address_line2 || "No address"}</p>
+            ${p.website ? `<a href="${p.website}" target="_blank">Website</a>` : ""}
+            <div class="categories">
+              ${tags.map(tag => {
+                const typeObj = TYPE.find(t => t.value === tag);
+                return `<span class="tag">${typeObj ? typeObj.label : tag.replace("catering.", "")}</span>`;
+              }).join(" ")}
+            </div>
+            <div class="allergens">
+              ${allergenTags.join(" ")}
+            </div>
+          </div>
+        `;
+      }).join("");
   }
 
-  // Handle filter changes
+
+  // Handle allergen and type filter changes
+  let lastPlaces = [];
+  let selectedTypeFilters = TYPE.map(t => t.value);
   async function handleFilterChange() {
-    const checked = Array.from(document.querySelectorAll('.allergen-checkbox:checked')).map(cb => cb.value);
-    const places = await fetchPlaces(checked);
-    renderPlaces(places);
+    const checkedAllergens = Array.from(document.querySelectorAll('.allergen-checkbox:checked')).map(cb => cb.value);
+    const checkedTypes = Array.from(document.querySelectorAll('.type-checkbox:checked')).map(cb => cb.value);
+    selectedTypeFilters = checkedTypes.length ? checkedTypes : TYPE.map(t => t.value);
+    const places = await fetchPlaces(checkedAllergens);
+    lastPlaces = places;
+    renderPlaces(places, selectedTypeFilters);
+  }
+
+  // Handle type filter only (no new fetch)
+  function handleTypeFilterOnly() {
+    const checkedTypes = Array.from(document.querySelectorAll('.type-checkbox:checked')).map(cb => cb.value);
+    selectedTypeFilters = checkedTypes.length ? checkedTypes : TYPE.map(t => t.value);
+    renderPlaces(lastPlaces, selectedTypeFilters);
   }
 
   // Initialize immediately
   async function init() {
     renderAllergenFilters();
+    // Add type filter container if not present
+    let typeFilterDiv = document.getElementById("type-filters");
+    if (!typeFilterDiv) {
+      typeFilterDiv = document.createElement("div");
+      typeFilterDiv.id = "type-filters";
+      typeFilterDiv.className = "filters";
+      const allergenDiv = document.getElementById("allergen-filters");
+      if (allergenDiv && allergenDiv.parentNode) {
+        allergenDiv.parentNode.insertBefore(typeFilterDiv, allergenDiv);
+      }
+    }
+    renderTypeFilters();
     document.getElementById("allergen-filters").addEventListener("change", handleFilterChange);
+    document.getElementById("type-filters").addEventListener("change", handleTypeFilterOnly);
     const places = await fetchPlaces();
+    lastPlaces = places;
     renderPlaces(places);
   }
   init();

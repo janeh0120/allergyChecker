@@ -7,6 +7,7 @@ html {
 body {
   font-family: 'TwentiethCenturyMedium', sans-serif;
   margin: 0;
+  background-color: rgb(240, 238, 234);
 }
 
 h1 {
@@ -317,4 +318,18 @@ button.close {
 .fairy,
 .fairy .listing {
   background: #ee99ac
+}
+
+.place-item{
+  padding: 1rem;
+  background-color: #fffffa;
+  margin-bottom: 1rem;
+  border-radius: 1rem;
+}
+
+.place-item:hover{
+  padding: 1rem;
+  background-color: #eeeee8;
+  margin-bottom: 1rem;
+  border-radius: 1rem;
 }
