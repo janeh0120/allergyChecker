@@ -113,15 +113,15 @@ const createListings = () => {
           <div class="place-item">
             <h3>${p.name || "Unnamed"}</h3>
             <p>${p.address_line2 || "No address"}</p>
-            ${p.website ? `<a href="${p.website}" target="_blank">Website</a>` : ""}
-            <div class="categories">
-              ${tags.map(tag => {
+            ${p.website ? `<a href="${p.website}" target="_blank">Website<img src="open.svg" alt="Open website"></a>` : ""}
+            <div class="categories"><strong>Type:</strong> 
+              ${tags.length ? tags.map(tag => {
                 const typeObj = TYPE.find(t => t.value === tag);
                 return `<span class="tag">${typeObj ? typeObj.label : tag.replace("catering.", "")}</span>`;
-              }).join(" ")}
+              }).join(" ") : '<span class="tag">Unknown</span>'}
             </div>
-            <div class="allergens">
-              ${allergenTags.join(" ")}
+            <div class="allergens"><strong>Allergens:</strong> 
+              ${allergenTags.length ? allergenTags.join(" ") : '<span class="allergen-tag">None listed</span>'}
             </div>
           </div>
         `;
