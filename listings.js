@@ -41,22 +41,22 @@ const createListings = () => {
     { label: "Bar", value: "catering.bar" },
   ];
 
-  // Render allergen filter checkboxes
-  function renderAllergenFilters() {
+  // Render allergen filter tags
+  function renderAllergenFilters(selectedAllergens = []) {
     const filterDiv = document.getElementById("allergen-filters");
     if (!filterDiv) return;
     filterDiv.innerHTML = ALLERGENS.map(a => `
-      <label><input type="checkbox" value="${a.value}" class="allergen-checkbox"> ${a.label}</label>
+      <span class="filter-tag allergen-tag${selectedAllergens.includes(a.value) ? ' active' : ''}" data-value="${a.value}">${a.label}</span>
     `).join(" ");
   }
 
 
-  // Render type filter checkboxes (used for filtering and display)
+  // Render type filter tags
   function renderTypeFilters(selectedTypes = TYPE.map(t => t.value)) {
     const typeFilterDiv = document.getElementById("type-filters");
     if (!typeFilterDiv) return;
     typeFilterDiv.innerHTML = TYPE.map(t => `
-      <label><input type="checkbox" value="${t.value}" class="type-checkbox" ${selectedTypes.includes(t.value) ? "checked" : ""}> ${t.label}</label>
+      <span class="filter-tag type-tag${selectedTypes.includes(t.value) ? ' active' : ''}" data-value="${t.value}">${t.label}</span>
     `).join(" ");
   }
 
@@ -109,8 +109,25 @@ const createListings = () => {
         const allergenTags = ALLERGENS
           .filter(a => (p.conditions && p.conditions.includes && p.conditions.includes(a.value)) || p[a.value] === true)
           .map(a => `<span class="allergen-tag">${a.label}</span>`);
+        // Pick the most specific category (last in array)
+        const categoriesArr = p.categories || [];
+        const mostSpecific = categoriesArr.length ? categoriesArr[categoriesArr.length - 1] : "";
+        // Map category to image filename
+        const categoryImages = {
+          "catering.cafe.coffee": "coffee.svg",
+          "catering.cafe.tea": "tea.svg",
+          "catering.cafe.cake": "cake.svg",
+          "catering.cafe.dessert": "dessert.svg",
+          "catering.cafe.ice_cream": "icecream.svg",
+          "catering.fast_food": "fastfood.svg",
+          "catering.restaurant": "restaurant.svg",
+          "catering.bar": "bar.svg",
+          // Add more mappings as needed
+        };
+        const imgSrc = categoryImages[mostSpecific] || "pokeball.svg";
         return `
           <div class="place-item">
+            <img src="${imgSrc}" alt="${mostSpecific || 'Placeholder'}" style="width:64px;height:64px;object-fit:cover;border-radius:8px;margin-bottom:0.5rem;" />
             <h3>${p.name || "Unnamed"}</h3>
             <p>${p.address_line2 || "No address"}</p>
             ${p.website ? `<a href="${p.website}" target="_blank">Website<img src="open.svg" alt="Open website"></a>` : ""}
@@ -133,24 +150,25 @@ const createListings = () => {
   let lastPlaces = [];
   let selectedTypeFilters = TYPE.map(t => t.value);
   async function handleFilterChange() {
-    const checkedAllergens = Array.from(document.querySelectorAll('.allergen-checkbox:checked')).map(cb => cb.value);
-    const checkedTypes = Array.from(document.querySelectorAll('.type-checkbox:checked')).map(cb => cb.value);
-    selectedTypeFilters = checkedTypes.length ? checkedTypes : TYPE.map(t => t.value);
-    const places = await fetchPlaces(checkedAllergens);
-    lastPlaces = places;
-    renderPlaces(places, selectedTypeFilters);
+  // Get selected allergens and types from active tags
+  const checkedAllergens = Array.from(document.querySelectorAll('.allergen-tag.filter-tag.active')).map(tag => tag.getAttribute('data-value'));
+  const checkedTypes = Array.from(document.querySelectorAll('.type-tag.filter-tag.active')).map(tag => tag.getAttribute('data-value'));
+  selectedTypeFilters = checkedTypes.length ? checkedTypes : TYPE.map(t => t.value);
+  const places = await fetchPlaces(checkedAllergens);
+  lastPlaces = places;
+  renderPlaces(places, selectedTypeFilters);
   }
 
   // Handle type filter only (no new fetch)
   function handleTypeFilterOnly() {
-    const checkedTypes = Array.from(document.querySelectorAll('.type-checkbox:checked')).map(cb => cb.value);
-    selectedTypeFilters = checkedTypes.length ? checkedTypes : TYPE.map(t => t.value);
-    renderPlaces(lastPlaces, selectedTypeFilters);
+  const checkedTypes = Array.from(document.querySelectorAll('.type-tag.filter-tag.active')).map(tag => tag.getAttribute('data-value'));
+  selectedTypeFilters = checkedTypes.length ? checkedTypes : TYPE.map(t => t.value);
+  renderPlaces(lastPlaces, selectedTypeFilters);
   }
 
   // Initialize immediately
   async function init() {
-    renderAllergenFilters();
+  renderAllergenFilters();
     // Add type filter container if not present
     let typeFilterDiv = document.getElementById("type-filters");
     if (!typeFilterDiv) {
@@ -163,8 +181,19 @@ const createListings = () => {
       }
     }
     renderTypeFilters();
-    document.getElementById("allergen-filters").addEventListener("change", handleFilterChange);
-    document.getElementById("type-filters").addEventListener("change", handleTypeFilterOnly);
+    // Tag click event listeners
+    document.getElementById("allergen-filters").addEventListener("click", function(e) {
+      if (e.target.classList.contains('filter-tag')) {
+        e.target.classList.toggle('active');
+        handleFilterChange();
+      }
+    });
+    document.getElementById("type-filters").addEventListener("click", function(e) {
+      if (e.target.classList.contains('filter-tag')) {
+        e.target.classList.toggle('active');
+        handleTypeFilterOnly();
+      }
+    });
     const places = await fetchPlaces();
     lastPlaces = places;
     renderPlaces(places);

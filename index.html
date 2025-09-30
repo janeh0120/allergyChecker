@@ -10,10 +10,7 @@
   <title>Cafes</title>
 
   <!-- Pokemon Font via https://www.cdnfonts.com/pokemon-solid.font -->
-  <link
-    href="https://fonts.cdnfonts.com/css/pokemon-solid"
-    rel="stylesheet"
-  >
+<link rel="stylesheet" href="https://use.typekit.net/zjr5mqn.css">
 
   <!-- Dom Purify library helps to Sanitize dynamic HTML strings.-->
   <script
@@ -47,11 +44,13 @@
     <h1>Pokemon Types</h1>
   </header> -->
   <nav></nav>
-  <main>
-  <section class="active">
-      <h2>Find Local Cafes & Bubble Tea</h2>
+  <main class="main-layout">
+    <section class="sidebar">
+      <h2>Allergy Checker</h2>
       <div id="allergen-filters" class="filters"></div>
       <div id="type-filters" class="filters"></div>
+    </section>
+    <section class="active content-area">
       <div id="places-list" class="places-list"></div>
     </section>
   </main>
