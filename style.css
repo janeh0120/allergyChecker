@@ -61,6 +61,10 @@ h2 {
 }
 
 h3 {
+  font-family: 'Roca', sans-serif;
+  font-size: 1.8rem;
+  line-height: 1.8rem;
+  letter-spacing: -0.1rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -248,13 +252,7 @@ header {
   margin: 2rem;
 }
 
-button.close {
-  align-self: end;
-  position: relative;
-  z-index: 10;
-  /* ensure that the button is on top of the subsequent text */
-  cursor: pointer;
-}
+
 
 .details {
   display: flex;
@@ -317,95 +315,10 @@ button.close {
   color: rgba(0, 0, 0, 0.5);
 }
 
-
-/*Colours Via https://bulbapedia.bulbagarden.net/wiki/Type */
-.normal {
-  background: #A8A878
-}
-
-.fire {
-  background: #F08030
-}
-
-.fighting {
-  background: #C03028
-}
-
-.water {
-  background: #6890F0
-}
-
-.flying,
-.flying .listing {
-  background: #a890f0
-}
-
-.grass,
-.grass .listing {
-  background: #78c850
-}
-
-.poison,
-.poison .listing {
-  background: #a040a0
-}
-
-.electric,
-.electric .listing {
-  background: #f8d030
-}
-
-.ground,
-.ground .listing {
-  background: #e0c068
-}
-
-.psychic,
-.psychic .listing {
-  background: #f85888
-}
-
-.rock,
-.rock .listing {
-  background: #b8a038
-}
-
-.ice,
-.ice .listing {
-  background: #98d8d8
-}
-
-.bug,
-.bug .listing {
-  background: #a8b820
-}
-
-.dragon,
-.dragon .listing {
-  background: #7038f8
-}
-
-.ghost,
-.ghost .listing {
-  background: #705898
-}
-
-.dark,
-.dark .listing {
-  background: #705848
-}
-
-.steel,
-.steel .listing {
-  background: #b8b8d0
-}
-
-.fairy,
-.fairy .listing {
-  background: #ee99ac
-}
-
 .place-item {
+  display: grid;
+  grid-template-columns: 2fr 1fr; /* 2 equal columns */
+  gap: 1rem; /* space between cards */
   padding: 1rem;
   background-color: #fffffa;
   border-radius: 1rem;
@@ -415,4 +328,62 @@ button.close {
 
 .place-item:hover {
   background-color: #eeeee8;
+}
+
+.card-text {
+  /* display: flex; */
+  /* flex-direction: column; */
+  /* gap: 0.1rem; */
+  /* align-items: center; */
+}
+
+.place-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 0.5rem;
+}
+.website {
+  display: inline-flex;          /* icon + text inline */
+  align-items: center;           /* center vertically */
+  gap: 0.5rem;                   /* space between icon & text */
+  padding: 0.5rem 1rem;
+  background-color: #d7d7d7;     /* primary color */
+  color: #fff;                   /* white text */
+  border-radius: 8px;            /* rounded corners */
+  font-weight: 500;
+  font-size: 0.9rem;
+  text-decoration: none;         /* remove underline */
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.website:hover {
+  background-color: #efefef;     /* darker on hover */
+  /* transform: translateY(-2px);   subtle lift */
+}
+
+.website a{
+  display: inline-flex;      /* keeps icon + text inline */
+  align-items: center;       /* vertically centers them */
+  gap: 0.4rem;               /* space between icon and text */
+  text-decoration: none;     /* remove underline */
+  color: #020202;            /* nice link color */
+  font-weight: 500;          /* make it stand out a bit */
+  font-size: 0.9rem;
+  transition: color 0.2s ease;
+}
+
+.website a:hover {
+  color: #8f8f8f;            /* darker shade on hover */
+  text-decoration: underline;
+}
+
+.location {
+  display: flex;
+  align-items: start; /* vertically center icon + text */
+  gap: 0.2rem;         /* space between icon and text */
+}
+
+.location p {
+  margin: 0; /* remove default <p> margins */
 }

@@ -242,8 +242,8 @@ function renderPlaces(places, selectedTypes = TYPE.map(t => t.value)) {
         "bubble_tea": "images/bubble-tea.svg",
         "coffee": "images/coffee.svg",
         "coffee_shop": "images/coffee.svg",
-        "mediterranean": "images/mediterranean-sharwarma.svg",
-        "lebanese": "images/mediterranean-sharwarma.svg",
+        "mediterranean": "images/mediterranean-shawarma.svg",
+        "lebanese": "images/mediterranean-shawarma.svg",
         // "ramen": "images/ramen.svg",
         "breakfast": "images/breakfast.svg",
         "fast_food": "images/fast-food.svg",
@@ -288,11 +288,22 @@ function renderPlaces(places, selectedTypes = TYPE.map(t => t.value)) {
 
       return `
         <div class="place-item">
-          <img src="${imgSrc}" alt="${chosenCuisine || 'Placeholder'}" style="width:64px;height:64px;object-fit:cover;border-radius:8px;margin-bottom:0.5rem;" />
-          <h3>${p.name || "Unnamed"}</h3>
-          <p>${p.address_line2 || "No address"}</p>
-          ${p.website ? `<a href="${p.website}" target="_blank">Website<img src="open.svg" alt="Open website"></a>` : ""}
-          <div class="categories"><strong>Type:</strong> 
+        <div class="card-text">
+            <h3>${p.name || "Unnamed"}</h3>
+            <div class="location">
+              <img src="images/pin.svg" style="width: 1rem; vertical-align: middle;" alt="location icon"/>
+              <p>${p.address_line2 || "No address"}</p>
+            </div>
+            <div class="website">
+              ${p.website ? `<a href="${p.website}" target="_blank">Website<img src="images/open.svg" style="width: 1rem; vertical-align: middle;" alt="Open website"></a>` : ""}</div>
+          </div>
+          <img src="${imgSrc}" alt="${chosenCuisine || 'Placeholder'}" class="place-image" />
+          
+        </div>
+      `;
+    }).join("");
+}
+{/* <div class="categories"><strong>Type:</strong> 
             ${tags.length ? tags.map(tag => {
               const typeObj = TYPE.find(t => t.value === tag);
               return `<span class="tag">${typeObj ? typeObj.label : tag.replace("catering.", "")}</span>`;
@@ -300,12 +311,7 @@ function renderPlaces(places, selectedTypes = TYPE.map(t => t.value)) {
           </div>
           <div class="allergens"><strong>Allergens:</strong> 
             ${allergenTags.length ? allergenTags.join(" ") : '<span class="allergen-tag">None listed</span>'}
-          </div>
-        </div>
-      `;
-    }).join("");
-}
-
+          </div> */}
 
 
   // Handle allergen and type filter changes
