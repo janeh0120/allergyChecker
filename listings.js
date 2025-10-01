@@ -287,6 +287,8 @@ function renderPlaces(places, selectedTypes = TYPE.map(t => t.value)) {
       if (!imgSrc) imgSrc = "pokeball.svg";
 
       return `
+        
+        <div class="card-bg">
         <div class="place-item">
         <div class="card-text">
             <h3>${p.name || "Unnamed"}</h3>
@@ -298,7 +300,7 @@ function renderPlaces(places, selectedTypes = TYPE.map(t => t.value)) {
               ${p.website ? `<a href="${p.website}" target="_blank">Website<img src="images/open.svg" style="width: 1rem; vertical-align: middle;" alt="Open website"></a>` : ""}</div>
           </div>
           <img src="${imgSrc}" alt="${chosenCuisine || 'Placeholder'}" class="place-image" />
-          
+          </div>
         </div>
       `;
     }).join("");

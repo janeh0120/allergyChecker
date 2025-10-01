@@ -66,8 +66,8 @@ h3 {
   line-height: 1.8rem;
   letter-spacing: -0.1rem;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  /* align-items: center; */
+  /* justify-content: center; */
   gap: 0.5rem;
   font-weight: normal;
   margin-top: 0px;
@@ -114,18 +114,11 @@ section {
   padding: 1rem;
 }
 
-
-
 /* Layout for sidebar and content */
-
-
 .main-layout {
   height: 100vh;
   width: 100vw;
 }
-
-
-
 
 .sidebar {
   display: flex;
@@ -154,9 +147,6 @@ section {
   margin-bottom: 2rem;
   text-align: left;
 }
-
-
-
 
 .content-area {
   display: block;
@@ -265,16 +255,6 @@ header {
 
 
 
-
-.stats {
-  margin-top: 1rem;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 0.5rem;
-}
-
-
 @media (min-width: 768px) {
   .details {
     flex-direction: row;
@@ -321,7 +301,7 @@ header {
   gap: 1rem; /* space between cards */
   padding: 1rem;
   background-color: #fffffa;
-  border-radius: 1rem;
+  /* border-radius: 1rem; */
   box-shadow: 0 2px 8px rgba(0,0,0,0.04);
   transition: background 0.2s;
 }
@@ -341,7 +321,7 @@ header {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border-radius: 0.5rem;
+  /* border-radius: 0.5rem; */
 }
 .website {
   display: inline-flex;          /* icon + text inline */
@@ -350,7 +330,7 @@ header {
   padding: 0.5rem 1rem;
   background-color: #d7d7d7;     /* primary color */
   color: #fff;                   /* white text */
-  border-radius: 8px;            /* rounded corners */
+  border-radius: 1rem;            /* rounded corners */
   font-weight: 500;
   font-size: 0.9rem;
   text-decoration: none;         /* remove underline */
@@ -386,4 +366,16 @@ header {
 
 .location p {
   margin: 0; /* remove default <p> margins */
+}
+
+.card-bg {
+  background-image: url('images/checker.png');
+  background-size: cover;
+  background-position: center;
+  padding: 1.5rem;
+}
+
+.card-bg:hover {
+  rotate: 1deg;
+  filter: drop-shadow(5px 5px 10px rgba(0, 0, 0, 0.5));
 }
