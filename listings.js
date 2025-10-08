@@ -8,7 +8,8 @@ const createListings = () => {
 
   const API_KEY = "45ac13a7c2764f6880bc0a63095448e3";
   const BASE_URL = "https://api.geoapify.com/v2/places";
-  const DEFAULT_LOCATION = "circle:-79.698788,43.469814,10000"; // 10km radius
+  // const DEFAULT_LOCATION = "circle:-79.698788,43.469814,10000"; // 10km radius
+    const DEFAULT_LOCATION = "circle:-74.0060,40.7128,10000"; // 10km radius
   const DEFAULT_CATEGORIES = ["catering.cafe", "catering.restaurant", "catering.fast_food"]; // cafes and bubble tea places
   const ALLERGENS = [
     { label: "Vegetarian", value: "vegetarian" },
@@ -33,24 +34,62 @@ const createListings = () => {
     { label: "Bar", value: "catering.bar" },
   ];
 
+  // // Render allergen filter tags
+  // function renderAllergenFilters(selectedAllergens = []) {
+  //   const filterDiv = document.getElementById("allergen-filters");
+  //   if (!filterDiv) return;
+  //   filterDiv.innerHTML = ALLERGENS.map(a => `
+  //     <span class="filter-tag allergen-tag${selectedAllergens.includes(a.value) ? ' active' : ''}" data-value="${a.value}">${a.label}</span>
+  //   `).join(" ");
+  // }
+
+
+  // // Render type filter tags
+  // function renderTypeFilters(selectedTypes = TYPE.map(t => t.value)) {
+  //   const typeFilterDiv = document.getElementById("type-filters");
+  //   if (!typeFilterDiv) return;
+  //   typeFilterDiv.innerHTML = TYPE.map(t => `
+  //     <span class="filter-tag type-tag${selectedTypes.includes(t.value) ? ' active' : ''}" data-value="${t.value}">${t.label}</span>
+  //   `).join(" ");
+  // }
   // Render allergen filter tags
-  function renderAllergenFilters(selectedAllergens = []) {
-    const filterDiv = document.getElementById("allergen-filters");
-    if (!filterDiv) return;
-    filterDiv.innerHTML = ALLERGENS.map(a => `
-      <span class="filter-tag allergen-tag${selectedAllergens.includes(a.value) ? ' active' : ''}" data-value="${a.value}">${a.label}</span>
-    `).join(" ");
-  }
+function renderAllergenFilters(selectedAllergens = []) {
+  const filterDiv = document.getElementById("allergen-filters");
+  if (!filterDiv) return;
+  filterDiv.innerHTML = ALLERGENS.map(a => `
+    <span class="filter-tag allergen-tag${selectedAllergens.includes(a.value) ? ' active' : ''}" data-value="${a.value}">
+      <span class="tag-label">${a.label}</span>
+      <img src="images/exit.svg" class="exit-icon" alt="remove filter" style="display:${selectedAllergens.includes(a.value) ? 'inline' : 'none'}; width:0.6rem; margin-left:0.4rem; vertical-align:middle;"/>
+    </span>
+  `).join(" ");
+}
+
+// Render type filter tags
+// function renderTypeFilters(selectedTypes = []) {
+//   const typeFilterDiv = document.getElementById("type-filters");
+//   if (!typeFilterDiv) return;
+//   typeFilterDiv.innerHTML = TYPE.map(t => `
+//     <span class="filter-tag type-tag${selectedTypes.includes(t.value) ? ' active' : ''}" data-value="${t.value}">
+//       <span class="tag-label">${t.label}</span>
+//       <img src="images/exit.svg" class="exit-icon" alt="remove filter" style="display:${selectedTypes.includes(t.value) ? 'inline' : 'none'}; width:0.9rem; margin-left:0.4rem; vertical-align:middle;"/>
+//     </span>
+//   `).join(" ");
+// }
 
 
-  // Render type filter tags
-  function renderTypeFilters(selectedTypes = TYPE.map(t => t.value)) {
-    const typeFilterDiv = document.getElementById("type-filters");
-    if (!typeFilterDiv) return;
-    typeFilterDiv.innerHTML = TYPE.map(t => `
-      <span class="filter-tag type-tag${selectedTypes.includes(t.value) ? ' active' : ''}" data-value="${t.value}">${t.label}</span>
-    `).join(" ");
-  }
+function renderTypeFilters(selectedTypes = TYPE.map(t => t.value)) { // 👈 Preselect all by default
+  const typeFilterDiv = document.getElementById("type-filters");
+  if (!typeFilterDiv) return;
+  typeFilterDiv.innerHTML = TYPE.map(t => `
+    <span class="filter-tag type-tag${selectedTypes.includes(t.value) ? ' active' : ''}" data-value="${t.value}">
+      <span class="tag-label">${t.label}</span>
+      <img src="images/exit.svg" class="exit-icon" alt="remove filter"
+        style="display:${selectedTypes.includes(t.value) ? 'inline' : 'none'};
+        width:0.6rem; margin-left:0.4rem; vertical-align:middle;"/>
+    </span>
+  `).join(" ");
+}
+
 
   // Fetch places from Geoapify
   async function fetchPlaces(selectedAllergens = []) {
@@ -80,130 +119,6 @@ const createListings = () => {
     }
   }
 
-// // Render places as a list, filtered by selected types
-// function renderPlaces(places, selectedTypes = TYPE.map(t => t.value)) {
-//   const listDiv = document.getElementById("places-list");
-//   if (!listDiv) return;
-
-//   if (!Array.isArray(places) || places.length === 0) {
-//     listDiv.innerHTML = "<p>No results found.</p>";
-//     return;
-//   }
-
-//   const typeValues = TYPE.map(t => t.value);
-
-//   listDiv.innerHTML = places
-//     .filter(f => {
-//       const p = f.properties || {};
-//       const cats = p.categories || [];
-//       // consider a match if any category equals or startsWith a selected type (so "catering.cafe" matches "catering.cafe.coffee")
-//       return cats.some(cat => selectedTypes.some(sel => cat === sel || cat.startsWith(sel)));
-//     })
-//     .map(f => {
-//       const p = f.properties || {};
-
-//       // tags: only keep the top-level TYPE matches (allowing more-specific categories)
-//       const tags = (p.categories || []).filter(cat => typeValues.some(tv => cat === tv || cat.startsWith(tv)));
-
-//       // Allergen tags (safe guard for p.conditions)
-//       const allergenTags = ALLERGENS
-//         .filter(a => (p.conditions && typeof p.conditions.includes === "function" && p.conditions.includes(a.value)) || p[a.value] === true)
-//         .map(a => `<span class="allergen-tag">${a.label}</span>`);
-
-//       // --- Cuisine handling: robustly accept array, semicolon/csv string, or object ---
-//       let cuisinesRaw = undefined;
-//       if (p.datasource && p.datasource.raw && p.datasource.raw.cuisine) {
-//         cuisinesRaw = p.datasource.raw.cuisine;
-//       } else if (p.catering && p.catering.cuisine) {
-//         cuisinesRaw = p.catering.cuisine;
-//       } else if (p.cuisines) {
-//         cuisinesRaw = p.cuisines;
-//       } else if (p.cuisine) {
-//         cuisinesRaw = p.cuisine;
-//       } else {
-//         cuisinesRaw = "";
-//       }
-
-//       let cuisines = [];
-//       if (Array.isArray(cuisinesRaw)) {
-//         cuisines = cuisinesRaw.slice();
-//       } else if (typeof cuisinesRaw === "string") {
-//         // split on semicolon or comma (trim and remove empty)
-//         cuisines = cuisinesRaw.split(/[;,]/).map(s => s.trim()).filter(Boolean);
-//       } else if (cuisinesRaw && typeof cuisinesRaw === "object") {
-//         // flatten values if object-like
-//         try {
-//           cuisines = Object.values(cuisinesRaw).flat().map(String).map(s => s.trim()).filter(Boolean);
-//         } catch (e) {
-//           cuisines = [];
-//         }
-//       }
-
-//       // normalize cuisine tokens so keys match (e.g. "bubble tea" -> "bubble_tea")
-//       const normalizedCuisines = cuisines.map(c => String(c).toLowerCase().replace(/\s+/g, "_").replace(/-/g, "_"));
-//       const mostSpecificCuisine = normalizedCuisines.length ? normalizedCuisines[normalizedCuisines.length - 1] : "";
-
-//       // Map cuisines and categories to images
-//       const categoryImages = {
-//         "bubble_tea": "images/bubble-tea.svg",
-//         "coffee": "images/coffee.svg",
-//         "coffee_shop": "images/coffee.svg",
-//         "mediterranean": "images/mediterranean-sharwarma.svg",
-//         "sharwarma": "images/mediterranean-sharwarma.svg",
-//         // "ramen": "images/ramen.svg",
-//         "breakfast": "images/breakfast.svg",
-//         "fast_food": "images/fast-food.svg",
-//         "american": "images/fast-food.svg",
-//         "burger": "images/fast-food.svg",
-//         "indian": "images/indian.svg",
-//         "tex_mex": "images/taco-texmex.svg",
-//         "taco": "images/taco-texmex.svg",
-//         "empanada": "images/taco-texmex.svg",
-//         // "restaurant": "images/restaurant.svg",
-//         "bar_and_grill": "images/bar&grill.svg",
-//         "steak_house": "images/bar&grill.svg",
-//         "italian": "images/pizza-italian.svg",
-//         "pizza": "images/pizza-italian.svg",
-//         "thai": "images/thai.svg",
-//         "cake": "images/cake.svg",
-//         // add more mappings as needed
-//       };
-
-//       // Choose image: prefer cuisine → fallback to type → fallback to default
-//       let imgSrc = categoryImages[mostSpecificCuisine];
-//       if (!imgSrc && tags.length) {
-//         // find the TYPE entry that matches this tag (using startsWith to handle more specific categories)
-//         const typeMatch = TYPE.find(t => tags[0] === t.value || tags[0].startsWith(t.value));
-//         if (typeMatch) {
-//           const typeKey = typeMatch.label.toLowerCase().replace(/\s+/g, "_");
-//           imgSrc = categoryImages[typeKey] || categoryImages[typeMatch.label.toLowerCase()];
-//         }
-//       }
-//       if (!imgSrc) imgSrc = "pokeball.svg";
-
-//       // prepare a user-friendly cuisines string for display
-//       const displayCuisines = normalizedCuisines.length ? normalizedCuisines.join(", ") : (p.cuisines || "None");
-
-//       return `
-//         <div class="place-item">
-//           <img src="${imgSrc}" alt="${mostSpecificCuisine || 'Placeholder'}" style="width:64px;height:64px;object-fit:cover;border-radius:8px;margin-bottom:0.5rem;" />
-//           <h3>${p.name || "Unnamed"}</h3>
-//           <p class="cuisines">${displayCuisines}</p>
-//           <p>${p.address_line2 || "No address"}</p>
-//           ${p.website ? `<a href="${p.website}" target="_blank">Website<img src="open.svg" alt="Open website"></a>` : ""}
-//           <div class="categories"><strong>Type:</strong> 
-//             ${tags.length ? tags.map(tag => {
-//               const typeObj = TYPE.find(t => tag === t.value || tag.startsWith(t.value));
-//               return `<span class="tag">${typeObj ? typeObj.label : tag.replace("catering.", "")}</span>`;
-//             }).join(" ") : '<span class="tag">Unknown</span>'}
-//           </div>
-//           <div class="allergens"><strong>Allergens:</strong> 
-//             ${allergenTags.length ? allergenTags.join(" ") : '<span class="allergen-tag">None listed</span>'}
-//           </div>
-//         </div>
-//       `;
-//     }).join("");
-// }
 
 // Render places as a list, filtered by selected types
 function renderPlaces(places, selectedTypes = TYPE.map(t => t.value)) {
@@ -296,9 +211,17 @@ function renderPlaces(places, selectedTypes = TYPE.map(t => t.value)) {
               <img src="images/pin.svg" style="width: 1rem; vertical-align: middle;" alt="location icon"/>
               <p>${p.address_line2 || "No address"}</p>
             </div>
-            <div class="website">
-              ${p.website ? `<a href="${p.website}" target="_blank">Website<img src="images/open.svg" style="width: 1rem; vertical-align: middle;" alt="Open website"></a>` : ""}</div>
-          </div>
+            ${p.website ? `
+  <div class="website">
+    <a href="${p.website}" target="_blank" class="website-link">
+    Visit Website
+      <img src="images/open.svg" alt="open link" style="width: 1rem; vertical-align: middle; margin-right: 0.3rem;"/>
+      
+    </a>
+  </div>
+` : ""}
+
+            </div>
           <img src="${imgSrc}" alt="${chosenCuisine || 'Placeholder'}" class="place-image" />
           </div>
         </div>
@@ -352,18 +275,38 @@ function renderPlaces(places, selectedTypes = TYPE.map(t => t.value)) {
     }
     renderTypeFilters();
     // Tag click event listeners
+    // document.getElementById("allergen-filters").addEventListener("click", function(e) {
+    //   if (e.target.classList.contains('filter-tag')) {
+    //     e.target.classList.toggle('active');
+    //     handleFilterChange();
+    //   }
+    // });
+    // document.getElementById("type-filters").addEventListener("click", function(e) {
+    //   if (e.target.classList.contains('filter-tag')) {
+    //     e.target.classList.toggle('active');
+    //     handleTypeFilterOnly();
+    //   }
+    // });
     document.getElementById("allergen-filters").addEventListener("click", function(e) {
-      if (e.target.classList.contains('filter-tag')) {
-        e.target.classList.toggle('active');
-        handleFilterChange();
-      }
-    });
-    document.getElementById("type-filters").addEventListener("click", function(e) {
-      if (e.target.classList.contains('filter-tag')) {
-        e.target.classList.toggle('active');
-        handleTypeFilterOnly();
-      }
-    });
+  const tag = e.target.closest('.filter-tag');
+  if (tag) {
+    tag.classList.toggle('active');
+    const icon = tag.querySelector('.exit-icon');
+    if (icon) icon.style.display = tag.classList.contains('active') ? 'inline' : 'none';
+    handleFilterChange();
+  }
+});
+
+document.getElementById("type-filters").addEventListener("click", function(e) {
+  const tag = e.target.closest('.filter-tag');
+  if (tag) {
+    tag.classList.toggle('active');
+    const icon = tag.querySelector('.exit-icon');
+    if (icon) icon.style.display = tag.classList.contains('active') ? 'inline' : 'none';
+    handleTypeFilterOnly();
+  }
+});
+
     const places = await fetchPlaces();
     lastPlaces = places;
     renderPlaces(places);
