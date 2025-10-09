@@ -1,4 +1,4 @@
-import { createProfile } from './profile.js';
+
 
 // To understand the structure of the data, check the console log in the browser.
 const createListings = () => {
