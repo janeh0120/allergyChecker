@@ -1,4 +1,5 @@
-
+//Developed using Co-Pilot and ChatGPT by Jane Hou
+//Code starting point: https://github.com/ixd-system-design/PokemonTypes written by Harold Sikkema
 
 // To understand the structure of the data, check the console log in the browser.
 const createListings = () => {
