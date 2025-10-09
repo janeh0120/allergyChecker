@@ -48,6 +48,13 @@ h3 {
   margin-top: 0px;
 }
 
+h3 span {
+  color: #fffef8;
+  padding: 0.2rem 0.5rem;
+  /* border-radius: 0.5rem; */
+  text-shadow: 0 1px #301600;
+}
+
 nav {
   display: flex;
   justify-content: center;
@@ -115,10 +122,10 @@ section {
   width: 50vw;
   min-width: 50vw;
   max-width: 50vw;
-  /* background: #FFF6E7; */
+  background: #FFF6E7;
   padding: 2rem 1rem 1rem 1rem;
   box-sizing: border-box;
-  /* border-right: 1px solid #e0dfdb; */
+  border-right: 1px solid #e0dfdb;
   position: fixed;
   left: 0;
   top: 0;
