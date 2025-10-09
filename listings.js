@@ -1,7 +1,5 @@
 import { createProfile } from './profile.js';
 
-// Let's create pokemon listings for each type 
-// We receive as input all types of Pokemon including a list of its members 
 // To understand the structure of the data, check the console log in the browser.
 const createListings = () => {
   // Geoapify API integration for listing cafes and bubble tea places with allergen filters
@@ -13,15 +11,10 @@ const createListings = () => {
   const DEFAULT_CATEGORIES = ["catering.cafe", "catering.restaurant", "catering.fast_food"]; // cafes and bubble tea places
   const ALLERGENS = [
     { label: "Vegetarian", value: "vegetarian" },
-    // { label: "Vegetarian Only", value: "vegetarian.only" },
     { label: "Vegan", value: "vegan" },
-    // { label: "Vegan Only", value: "vegan.only" },
     { label: "Halal", value: "halal" },
-    // { label: "Halal Only", value: "halal.only" },
     { label: "Kosher", value: "kosher" },
-    // { label: "Kosher Only", value: "kosher.only" },
     { label: "Organic", value: "organic" },
-    // { label: "Organic Only", value: "organic.only" },
     { label: "Gluten Free", value: "gluten_free" },
     { label: "Sugar Free", value: "sugar_free" },
     { label: "Egg Free", value: "egg_free" },
@@ -34,24 +27,6 @@ const createListings = () => {
     { label: "Bar", value: "catering.bar" },
   ];
 
-  // // Render allergen filter tags
-  // function renderAllergenFilters(selectedAllergens = []) {
-  //   const filterDiv = document.getElementById("allergen-filters");
-  //   if (!filterDiv) return;
-  //   filterDiv.innerHTML = ALLERGENS.map(a => `
-  //     <span class="filter-tag allergen-tag${selectedAllergens.includes(a.value) ? ' active' : ''}" data-value="${a.value}">${a.label}</span>
-  //   `).join(" ");
-  // }
-
-
-  // // Render type filter tags
-  // function renderTypeFilters(selectedTypes = TYPE.map(t => t.value)) {
-  //   const typeFilterDiv = document.getElementById("type-filters");
-  //   if (!typeFilterDiv) return;
-  //   typeFilterDiv.innerHTML = TYPE.map(t => `
-  //     <span class="filter-tag type-tag${selectedTypes.includes(t.value) ? ' active' : ''}" data-value="${t.value}">${t.label}</span>
-  //   `).join(" ");
-  // }
   // Render allergen filter tags
 function renderAllergenFilters(selectedAllergens = []) {
   const filterDiv = document.getElementById("allergen-filters");
@@ -63,18 +38,6 @@ function renderAllergenFilters(selectedAllergens = []) {
     </span>
   `).join(" ");
 }
-
-// Render type filter tags
-// function renderTypeFilters(selectedTypes = []) {
-//   const typeFilterDiv = document.getElementById("type-filters");
-//   if (!typeFilterDiv) return;
-//   typeFilterDiv.innerHTML = TYPE.map(t => `
-//     <span class="filter-tag type-tag${selectedTypes.includes(t.value) ? ' active' : ''}" data-value="${t.value}">
-//       <span class="tag-label">${t.label}</span>
-//       <img src="images/exit.svg" class="exit-icon" alt="remove filter" style="display:${selectedTypes.includes(t.value) ? 'inline' : 'none'}; width:0.9rem; margin-left:0.4rem; vertical-align:middle;"/>
-//     </span>
-//   `).join(" ");
-// }
 
 
 function renderTypeFilters(selectedTypes = TYPE.map(t => t.value)) { // 👈 Preselect all by default
@@ -159,7 +122,6 @@ function renderPlaces(places, selectedTypes = TYPE.map(t => t.value)) {
         "coffee_shop": "images/coffee.svg",
         "mediterranean": "images/mediterranean-shawarma.svg",
         "lebanese": "images/mediterranean-shawarma.svg",
-        // "ramen": "images/ramen.svg",
         "breakfast": "images/breakfast.svg",
         "fast_food": "images/fast-food.svg",
         "american": "images/fast-food.svg",
@@ -176,7 +138,6 @@ function renderPlaces(places, selectedTypes = TYPE.map(t => t.value)) {
         "thai": "images/thai.svg",
         "cake": "images/cake.svg",
         "chinese": "images/chinese.svg",
-        // add more mappings as needed
       };
 
       // Pick the FIRST cuisine in order that exists in categoryImages
@@ -228,15 +189,6 @@ function renderPlaces(places, selectedTypes = TYPE.map(t => t.value)) {
       `;
     }).join("");
 }
-{/* <div class="categories"><strong>Type:</strong> 
-            ${tags.length ? tags.map(tag => {
-              const typeObj = TYPE.find(t => t.value === tag);
-              return `<span class="tag">${typeObj ? typeObj.label : tag.replace("catering.", "")}</span>`;
-            }).join(" ") : '<span class="tag">Unknown</span>'}
-          </div>
-          <div class="allergens"><strong>Allergens:</strong> 
-            ${allergenTags.length ? allergenTags.join(" ") : '<span class="allergen-tag">None listed</span>'}
-          </div> */}
 
 
   // Handle allergen and type filter changes

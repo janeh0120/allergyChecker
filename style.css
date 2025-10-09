@@ -189,19 +189,6 @@ section {
   max-width: 30vw;
 }
 
-header img {
-  width: 80px;
-  padding: 1.2rem 0.8rem 0;
-}
-
-
-header {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin: 2rem;
-}
-
 
 
 .details {
